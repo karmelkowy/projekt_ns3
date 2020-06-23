@@ -1,0 +1,40 @@
+Oficjalna dokumentacja:
+https://www.nsnam.org/docs/release/3.22/models/html/lte.html
+dokumentacja użytkownika:
+https://www.nsnam.org/docs/release/3.22/models/html/lte-user.html
+dokumentacja projektowa:
+https://www.nsnam.org/docs/release/3.22/models/html/lte-design.html
+dokumentacja do przykładów, które zostaną przypisane jako zadanie projektowa:
+https://www.nsnam.org/doxygen/dir_fdce2e2b9e210571394585f89b3f8594.html
+Symulator (do ściągnięcia):
+https://www.nsnam.org/releases/ns-3-30/download/
+Dokumentacja do programu pozwalającego na wizualizację symulowanego scenariusza:
+https://www.nsnam.org/wiki/NetAnim_3.108
+
+Różne prezentacje i przykładowe kody:
+opensourceforu.com/2015/08/taking-the-first-baby-steps-in-ns-3/
+https://opensourceforu.com/2015/07/the-next-step-to-mastering-ns-3/
+https://opensourceforu.com/2015/10/simulating-wireless-networks-in-ns-3/
+https://opensourceforu.com/2017/11/tracing-vehicular-mobility-ns-3/
+https://opensourceforu.com/2015/11/python-and-pcap-in-ns-3/
+
+Do analizy przeznaczyłem Panu następujący plik z konfiguracją symulacji:  lena-deactivate-bearer.cc
+
+Powinien Pan skomentować każda linię kodu dając wyraz pełnego zrozumienia jego zawartości.
+Jeżeli wybrał Pan implementację scenariuszy symulacyjnych w języku Python to proszę zaimplementować ten sam scenariusz symulacyjny w języku Python.
+Proszę o udokumentowanie Pana kodu poprzez dopisania do każdej linii komentarza wyjaśniającego jej znaczenie.
+Proszę o włączenie zapisywania  śledzenia zdarzeń. W dokumentacji symulatora w języku C++ kod uruchamiający śledzenie zdarzeń znajduje się na stronie:
+https://www.nsnam.org/docs/release/3.22/models/html/lte-user.html   we fragmencie zaczynającym się od słów:
+"The ns-3 LTE model currently supports the output to file of PHY, MAC, RLC and PDCP level Key Performance Indicators (KPIs)"
+Włączenie śledzenia spowoduje stworzenie kilku plików z wynikami (w tym plik *.tr ze wszystkimi zdarzeniami).
+Proszę przygotować program (parser), który pozwoli na wczytywanie i filtrowanie danych zapisanych w tych plikach.
+
+Filtrowanie powinno być możliwe w doniesieniu do pól:
+1) Cellid, IMSI, RNTI (dla wszystkich plików z wyjątkiem pliku *.tr)
+2) dla pliku *.tr filtrowanie powinno być możliwe w odniesieniu do pól:
+a) typ zdarzenia (podany w pierwszej kolumnie): + lub -
+b) adres nadawcy , adres odbiorcy. Tu jest przykład fragmentu opisującego adres nadawcy i adres odbiorcy:
+1.0.0.2 > 7.0.0.2
+c) typ protokołu: GtpuHeader, SeqTsHeader
+d) zliczanie wolumenu przesłanego ruchu i obliczanie  przepływności strumieni (wolumen podzielony przez przedział czasu) - proszę dokonać wizualizacji
+danych ilościowych na wykresach z pomocą biblioteki np. matlibplot.
