@@ -13,7 +13,6 @@ class Parser:
     def __init__(self, file, suffix):
         self.file = file
         self.lines = []
-        self.rows = []
         self.data_set = []
         self.headers = []
 
@@ -154,28 +153,27 @@ class TrParser(Parser):
             data.sender_addr, data.receiver_addr = addr.strip().split(' > ')
 
         self.data_set.append(data.getRowList())  # storing row in data_set
-        self.rows.append(data)
 
     ''' 
     method for plotting graph based on network load to time
     quantum <float> is time to slice whole timeline and in that parts sum all load
     '''
-    def plot(self, payloadonly=True):
+    def plot(self, data, payloadonly=True):
         t = 0
         le = 0
 
         x = []
         y = []
-        for data in self.rows:
+        for event_type, event_time, header, sender_addr, receiver_addr, length, payload in data:
             if payloadonly:
-                le += data.payload
+                le += payload
             else:
-                le += data.length
-            if data.event_time != t:
+                le += length
+            if event_time != t:
                 x.append(t)
                 y.append(le)
                 le = 0
-                t = data.event_time
+                t = event_time
 
 
         fig, ax = plt.subplots()
@@ -268,17 +266,24 @@ def filterTest():
 
 
 def run():
+
+    # arg parser setup
     parser = argparse.ArgumentParser(description='Parser for ns-3 log files, support (*.txt, *.tr)')
     parser.add_argument('file')
     parser.add_argument("-CELLID", help="filter by Cellid value", type=int, action="store")
     parser.add_argument("-IMSI", help="filter by IMSI value", type=int, action="store")
     parser.add_argument("-RNTI", help="filter by RNTI value", type=int, action="store")
+
+    tr_args = (('type', str), ('time', float), ('protocol', str))
+    for arg_name, arg_type in tr_args:
+        parser.add_argument(f"-{arg_name}", help=f"filter by {arg_name} value", type=arg_type, action="store")
+
     parser.add_argument("-plot", help="plot *.tr ", action="store_true")
     parser.add_argument("-payloadonly", help="payload only", action="store_true")
 
     args = parser.parse_args()
 
-
+    # recognize log type
     if args.file.endswith('.txt'):
         parser = TxtParser(args.file)
     elif args.file.endswith('.tr'):
@@ -287,21 +292,28 @@ def run():
         e = args.file.split('.')[-1]
         raise AttributeError(f'{e} is not in (txt, tr) unknown to parse')
 
-    if args.plot:
-        if isinstance(parser, TrParser):
-            parser.plot(args.payloadonly)
-        else:
-            raise AttributeError('-plot only enable with tr logs')
-    else:
-        data = None
+    data = None
 
+    # filtering by args
+    if isinstance(parser, TxtParser):
         if args.CELLID is not None:
             data = parser.filter('cellId', '=', args.CELLID)
         if args.IMSI is not None:
             data = parser.filter('IMSI', '=', args.IMSI, data)
         if args.RNTI is not None:
             data = parser.filter('RNTI', '=', args.RNTI, data)
+    if isinstance(parser, TrParser):
+        for arg, _t in tr_args:
+            value = args.__dict__.get(arg)
+            if value is not None:
+                data = parser.filter(arg, '=', value, data)
 
+    if args.plot:
+        if isinstance(parser, TrParser):
+            parser.plot(data, args.payloadonly)
+        else:
+            raise AttributeError('-plot only enable with tr logs')
+    else:
         parser.display(data)
 
 

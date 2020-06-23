@@ -25,9 +25,12 @@ python3 ./parser.py <log_file> <params>
 
 parametrami moga byc filtry z wartosciami np
 
-python3 ./parser.py log.tr -send_addr 17.0.0.1
+python3 ./parser.py log.tr -type +
+(type, protocol, time) dla logow tr
+(CELLID, IMSI, RNTI) dla txt
 
 jednym z parametrow jest -plot umozliwiajacy narysowanie wykresu obciazenia lacza z pliku log.tr
+dodatkowo -payloadonly rysuje tylko wartosci payload bez wielkosci ramek
 
 
 W katalogu dane znajduja sie przykladowe pliki wyjsciowe symulatora, pozwalaja one na testy parsera.
